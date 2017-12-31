@@ -13,7 +13,7 @@ include:
 supervisor_config:
   file.managed:
   - name: {{ supervisor.conf_file }}
-  - source: salt://supervisor/files/supervisor.conf
+  - source: salt://supervisor/templates/supervisord.conf.jinja
   - mode: 644
   - template: jinja
   - require:
@@ -27,7 +27,7 @@ supervisor_config:
 supervisor_program_{{ program }}:
   file.managed:
     - name: {{ supervisor.program_dir }}/{{ program }}.conf
-    - source: salt://supervisor/templates/program.conf.tmpl
+    - source: salt://supervisor/templates/program.conf.jinja
     - template: jinja
     - mode: 644
     - user: root
