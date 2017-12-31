@@ -22,9 +22,9 @@ supervisor_config:
     - service: supervisor_service
 
 
-{%- for program, values in supervisor.get('prgrams', {}).iteritems() %}
+{%- for program, values in supervisor.get('programs', {}).iteritems() %}
+  {%- if ( 'enabled' in values and values.enabled ) or 'enabled' not in values %}
 supervisor_program_{{ program }}:
-  {% if ( 'enabled' in values and values.enabled ) or 'enabled' not in values %}
   file.managed:
     - name: {{ supervisor.program_dir }}/{{ program }}.conf
     - source: salt://supervisor/templates/program.conf.tmpl
@@ -35,14 +35,6 @@ supervisor_program_{{ program }}:
     - defaults:
         program: {{ program }}
         values: {{ values }}
-    - watch_in:
-      - supervisord: supervisor_program_{{ program }}_running
-  {%- elif 'enabled' in values and not values.enabled %}
-  file.absent:
-    - name: {{ supervisor.program_dir }}/{{ program }}.conf
-    - watch_in:
-      - supervisord: supervisor_program_{{ program }}_absent
-  {%- endif %}
 
 supervisor_program_{{ program }}_running:
   supervisord.running:
@@ -51,13 +43,22 @@ supervisor_program_{{ program }}_running:
     - restart: {{ supervisor.program_restart }}
     - require:
       - pkg: supervisor_packages
+    - onchanges:
+      - file: supervisor_program_{{ program }}
 
+  {%- else %}
 
 supervisor_program_{{ program }}_dead:
-  supervisord.running:
+  supervisord.dead:
     - name: {{ program }}
     - require:
       - pkg: supervisor_packages
 
+supervisor_program_{{ program }}:
+  file.absent:
+    - name: {{ supervisor.program_dir }}/{{ program }}.conf
+    - require:
+      - supervisord: supervisor_program_{{ program }}_dead
+  {%- endif %}
 
 {%- endfor %}
