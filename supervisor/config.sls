@@ -9,7 +9,6 @@ include:
   - supervisor.install
   - supervisor.service
 
-
 supervisor_config:
   file.managed:
   - name: {{ supervisor.conf_file }}
@@ -43,7 +42,7 @@ supervisor_program_{{ program }}_running:
     - restart: {{ supervisor.program_restart }}
     - require:
       - pkg: supervisor_packages
-    - onchanges:
+    - watch:
       - file: supervisor_program_{{ program }}
 
   {%- else %}
