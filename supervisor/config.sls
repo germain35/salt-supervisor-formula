@@ -23,7 +23,7 @@ supervisor_config:
 
 {%- for program, values in supervisor.get('programs', {}).iteritems() %}
   {%- if ( 'enabled' in values and values.enabled ) or 'enabled' not in values %}
-supervisor_program_{{ program }}:
+supervisor_{{ program }}_config:
   file.managed:
     - name: {{ supervisor.program_dir }}/{{ program }}.conf
     - source: salt://supervisor/templates/program.conf.jinja
@@ -34,30 +34,16 @@ supervisor_program_{{ program }}:
     - defaults:
         program: {{ program }}
         values: {{ values }}
-
-supervisor_program_{{ program }}_running:
-  supervisord.running:
-    - name: {{ program }}
-    - update: {{ supervisor.program_update }}
-    - restart: {{ supervisor.program_restart }}
-    - require:
-      - pkg: supervisor_packages
-    - watch:
-      - file: supervisor_program_{{ program }}
+    - watch_in:
+      - supervisord: supervisor_{{ program }}_service
 
   {%- else %}
 
-supervisor_program_{{ program }}_dead:
-  supervisord.dead:
-    - name: {{ program }}
-    - require:
-      - pkg: supervisor_packages
-
-supervisor_program_{{ program }}:
+supervisor_program_{{ program }}_config:
   file.absent:
     - name: {{ supervisor.program_dir }}/{{ program }}.conf
     - require:
-      - supervisord: supervisor_program_{{ program }}_dead
-  {%- endif %}
+      - supervisord: supervisor_{{ program }}_service
 
+  {%- endif %}
 {%- endfor %}
