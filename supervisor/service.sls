@@ -12,28 +12,17 @@ supervisor_service:
     - require:
       - pkg: supervisor_packages
 
-
-{%- for program, values in supervisor.get('programs', {}).iteritems() %}
-  {%- if ( 'enabled' in values and values.enabled ) or 'enabled' not in values %}
-
-supervisor_{{ program }}_service:
-  supervisord.running:
-    - name: {{ program }}
-    - update: {{ supervisor.program_update }}
-    - restart: {{ supervisor.program_restart }}
-    - conf_file: {{ supervisor.conf_file }}
-    - require:
-      - service: supervisor_service
-      - file: supervisor_{{ program }}_config
-
-  {%- else %}
-
-supervisor_{{ program }}_service:
-  supervisord.dead:
-    - name: {{ program }}
-    - conf_file: {{ supervisor.conf_file }}
+supervisor_program_update:
+  cmd.wait:
+    - name: supervisorctl update
     - require:
       - service: supervisor_service
 
-  {%- endif %}
-{%- endfor %}
+{%- if supervisor.program_restart %}
+supervisor_program_restart:
+  cmd.run:
+    - name: supervisorctl restart all
+    - require:
+      - service: supervisor_service
+      - cmd: supervisor_program_update
+{%- endif %}

@@ -1,6 +1,5 @@
 supervisor:
   service_enabled: True
   service_reload: False
-  program_update: True
   program_restart: False
-  purge_conf_dir: True
+  purge_program_dir: True

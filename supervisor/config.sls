@@ -20,10 +20,17 @@ supervisor_config:
   - watch_in:
     - service: supervisor_service
 
+supervisor_program_dir:
+  file.directory:
+    - name: {{ supervisor.program_dir }}
+    - user: root
+    - mode: 755
+    - force: True
+    - clean: {{ supervisord.purge_program_dir }}
 
 {%- for program, values in supervisor.get('programs', {}).iteritems() %}
   {%- if ( 'enabled' in values and values.enabled ) or 'enabled' not in values %}
-supervisor_{{ program }}_config:
+supervisor_program_{{ program }}_config:
   file.managed:
     - name: {{ supervisor.program_dir }}/{{ program }}.conf
     - source: salt://supervisor/templates/program.conf.jinja
@@ -34,16 +41,18 @@ supervisor_{{ program }}_config:
     - defaults:
         program: {{ program }}
         values: {{ values }}
+    - require:
+      - file: supervisor_program_dir
     - watch_in:
-      - supervisord: supervisor_{{ program }}_service
+      - cmd: supervisor_program_update
 
   {%- else %}
 
-supervisor_program_{{ program }}_config:
+supervisor_program_{{ program }}_config_absent:
   file.absent:
     - name: {{ supervisor.program_dir }}/{{ program }}.conf
-    - require:
-      - supervisord: supervisor_{{ program }}_service
+    - watch_in:
+      - cmd: supervisor_program_update
 
   {%- endif %}
 {%- endfor %}
