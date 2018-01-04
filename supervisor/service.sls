@@ -21,6 +21,7 @@ supervisor_{{ program }}_service:
     - name: {{ program }}
     - update: {{ supervisor.program_update }}
     - restart: {{ supervisor.program_restart }}
+    - conf_file: {{ supervisor.conf_file }}
     - require:
       - service: supervisor_service
       - file: supervisor_{{ program }}_config
@@ -30,6 +31,7 @@ supervisor_{{ program }}_service:
 supervisor_{{ program }}_service:
   supervisord.dead:
     - name: {{ program }}
+    - conf_file: {{ supervisor.conf_file }}
     - require:
       - service: supervisor_service
 
