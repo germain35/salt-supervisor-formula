@@ -4,9 +4,9 @@
 ;;; File managed by Salt
 ;;; supervisor config file
 
-{% for key, value in config.items() -%}
+{%- for key, value in config.items() %}
 [{{ key }}]
-  {% for k, v in value.items() -%}
+  {%- for k, v in value.items() %}
 {{ k }}={{ v }}
-  {% endfor %}
-{% endfor -%}
+  {%- endfor %}
+{%- endfor %}
