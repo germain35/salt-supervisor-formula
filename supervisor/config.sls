@@ -9,14 +9,36 @@ include:
   - supervisor.install
   - supervisor.service
 
+{%- if supervisor.pip_install %}
+supervisor_init_script:
+  file.managed:
+    - name: {{ supervisor.init_script }}
+    - source: salt://supervisor/files/init/{{osfamily}}.init
+    - user: root
+    - mode: 755
+    - watch_in:
+      - service: supervisor_service
+    - require:
+      - sls: supervisor.install
+
+supervisor_systemctl_reload:
+  module.wait:
+    - service.systemctl_reload: []
+    - watch:
+      - file: supervisor_init_script
+    - watch_in:
+      - service: supervisor_service
+{%- endif %}
+
 supervisor_config:
   file.managed:
   - name: {{ supervisor.conf_file }}
-  - source: salt://supervisor/templates/supervisord.conf.jinja
+  - source: salt://supervisor/files/supervisord.conf.jinja
   - mode: 644
   - template: jinja
+  - makedirs: True
   - require:
-    - pkg: supervisor_packages
+    - sls: supervisor.install
   - watch_in:
     - service: supervisor_service
 
@@ -33,7 +55,7 @@ supervisor_program_dir:
 supervisor_program_{{ program }}_config:
   file.managed:
     - name: {{ supervisor.program_dir }}/{{ program }}.conf
-    - source: salt://supervisor/templates/program.conf.jinja
+    - source: salt://supervisor/files/program.conf.jinja
     - template: jinja
     - mode: 644
     - user: root

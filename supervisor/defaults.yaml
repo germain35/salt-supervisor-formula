@@ -1,4 +1,5 @@
 supervisor:
+  pip_install: False
   service_enabled: True
   service_reload: False
   program_restart: False

@@ -10,7 +10,7 @@ supervisor_service:
     - enable: {{ supervisor.service_enabled }}
     - reload: {{ supervisor.service_reload }}
     - require:
-      - pkg: supervisor_packages
+      - sls: supervisor.install
 
 supervisor_program_update:
   cmd.wait:
