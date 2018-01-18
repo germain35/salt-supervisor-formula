@@ -5,7 +5,7 @@
 
 supervisor_pip_package:
   pkg.installed:
-    - name: {{ supervisor.pip_package }}
+    - name: {{ supervisor.pip_pkg }}
 
   {%- for pkg in supervisor.pkgs %}
 supervisor_{{pkg}}_pip_package:

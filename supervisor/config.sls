@@ -32,15 +32,23 @@ supervisor_systemctl_reload:
 
 supervisor_config:
   file.managed:
-  - name: {{ supervisor.conf_file }}
-  - source: salt://supervisor/files/supervisord.conf.jinja
-  - mode: 644
-  - template: jinja
-  - makedirs: True
-  - require:
-    - sls: supervisor.install
-  - watch_in:
-    - service: supervisor_service
+    - name: {{ supervisor.conf_file }}
+    - source: salt://supervisor/files/supervisord.conf.jinja
+    - mode: 644
+    - template: jinja
+    - makedirs: True
+    - require:
+      - sls: supervisor.install
+    - watch_in:
+      - service: supervisor_service
+
+supervisor_log_dir:
+  file.directory:
+    - name: {{ supervisor.config.supervisord.childlogdir }}
+    - user: root
+    - mode: 755
+    - require_in:
+      - service: supervisor_service
 
 supervisor_program_dir:
   file.directory:
