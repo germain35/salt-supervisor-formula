@@ -7,13 +7,11 @@ supervisor_pip_package:
   pkg.installed:
     - pkgs: {{ supervisor.pip_pkgs }}
 
-  {%- for pkg in supervisor.pkgs %}
-supervisor_{{pkg}}_pip_package:
+supervisor_package:
   pip.installed:
-    - name: {{ pkg }}
+    - name: {{ supervisor.pkg }}
     - require:
       - pkg: supervisor_pip_package
-  {%- endfor %}
 
 {%- else %}
 
