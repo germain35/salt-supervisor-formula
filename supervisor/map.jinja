@@ -15,7 +15,7 @@ that differ from what is in defaults.yaml
 {% set os_family_map = salt['grains.filter_by']({
     'Debian': {
         'pip_pkgs': ['python-pip', 'python-setuptools'],
-        'pkgs': ['supervisor'],
+        'pkg': 'supervisor',
         'service': 'supervisor',
         'init_script': '/etc/init.d/supervisor',
         'conf_file': '/etc/supervisor/supervisord.conf',

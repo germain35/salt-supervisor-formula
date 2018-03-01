@@ -17,8 +17,8 @@ supervisor_{{pkg}}_pip_package:
 
 {%- else %}
 
-supervisor_packages:
+supervisor_package:
   pkg.installed:
-    - pkgs: {{ supervisor.pkgs }}
+    - name: {{ supervisor.pkg }}
 
 {%- endif %}
