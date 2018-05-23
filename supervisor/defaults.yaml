@@ -4,3 +4,6 @@ supervisor:
   service_reload: False
   program_restart: False
   purge_program_dir: True
+  python:
+    pip:
+      no_index: False
