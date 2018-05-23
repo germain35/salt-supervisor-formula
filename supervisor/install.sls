@@ -12,6 +12,7 @@ supervisor_python_packages:
     - pkgs: 
       - python{{major_version}}-pip
       - python{{major_version}}-setuptools
+    - reload_modules: true
 
 supervisor_package:
   pip.installed:
@@ -39,6 +40,7 @@ supervisor_python_packages:
     - pkgs: 
       - python-pip
       - python-setuptools
+    - reload_modules: true
 
 supervisor_package:
   pip.installed:
