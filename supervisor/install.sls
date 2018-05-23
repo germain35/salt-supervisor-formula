@@ -2,9 +2,9 @@
 
 
 {%- if supervisor.pip_install %}
-  {%- if supervisor.python_version is defined %}
+  {%- if supervisor.python.get('version', False) %}
 
-    {%- set string_version = supervisor.python_version|string %}
+    {%- set string_version = supervisor.python.version|string %}
     {%- set major_version  = string_version.split('.')[0]|int %}
 
 supervisor_python_packages:
@@ -17,7 +17,7 @@ supervisor_python_packages:
 supervisor_package:
   pip.installed:
     - name: {{ supervisor.pkg }}
-    - bin_env: /usr/bin/pip{{supervisor.python_version}}
+    - bin_env: {{ supervisor.python.pip.bin_env }}
     {%- if supervisor.python.pip.get('no_index', False) %}
     - no_index: True
     {%- endif %}
