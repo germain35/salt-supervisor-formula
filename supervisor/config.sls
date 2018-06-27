@@ -58,7 +58,7 @@ supervisor_program_dir:
     - force: True
     - clean: {{ supervisor.purge_program_dir }}
 
-{%- for program, values in supervisor.get('programs', {}).iteritems() %}
+{%- for program, values in supervisor.get('programs', {}).items() %}
   {%- if ( 'enabled' in values and values.enabled ) or 'enabled' not in values %}
 supervisor_program_{{ program }}_config:
   file.managed:
