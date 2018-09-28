@@ -8,17 +8,30 @@
 {## Start with defaults from defaults.yaml ##}
 {% import_yaml 'supervisor/defaults.yaml' as default_settings %}
 
+{% set version       = "%s"|format(salt['pillar.get']('supervisor:python:version', salt['grains.get']('pythonversion')[:3])) %}
+{% set major_version = version.split('.')[0]|int %}
+
 {##
 Setup variables using grains['os_family'] based logic, only add key:values
 that differ from what is in defaults.yaml
 ##}
 {% set os_family_map = salt['grains.filter_by']({
     'Debian': {
-        'pkg': 'supervisor',
+        'pkgs': ['supervisor'],
+        'pip_pkgs': ['supervisor'],
         'service': 'supervisor',
         'init_script': '/etc/init.d/supervisor',
         'conf_file': '/etc/supervisor/supervisord.conf',
         'program_dir': '/etc/supervisor/conf.d/',
+        'python': {
+            'pkgs': ['python', 'python3', 'python-pip', 'python-setuptools', 'python3-pip', 'python3-setuptools'],
+            'python_bin': '/usr/bin/python',
+            'python3_bin': '/usr/bin/python3',
+            'pip_bin': '/usr/bin/pip',
+            'pip3_bin': '/usr/bin/pip3',
+            'version': version,
+            'major_version': major_version,
+        },
         'config': {
                 'unix_http_server': {
                     'file': '/var/run/supervisor.sock',
